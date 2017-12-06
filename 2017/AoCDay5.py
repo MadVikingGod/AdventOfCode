@@ -1,8 +1,8 @@
 
-gameInput = []
+
 with open('AoCDay5-data') as fh:
-    for line in fh:
-        gameInput.append(int(line))
+    gameInput = [int(line) for line in fh]
+
 
 print(len(gameInput))
 # gameInput = [0, 3, 0, 1, -3]
