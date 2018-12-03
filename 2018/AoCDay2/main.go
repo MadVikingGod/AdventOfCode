@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
 func main() {
@@ -19,7 +18,6 @@ func main() {
 		}
 	}
 	fmt.Println(threeCount * twoCount)
-	fmt.Println(reflect.DeepEqual(Input, Input2))
 
 	for i, id := range Input {
 		for _, id2 := range Input[i+1:] {
@@ -41,29 +39,23 @@ func distance(a, b string) int {
 	return d
 }
 
-func hasTwo(in string) bool {
+func hasN(in string, N int) bool {
 	found := map[rune]int{}
 	for _, c := range in {
 		found[c] = found[c] + 1
 	}
 	for _, v := range found {
-		if v == 2 {
+		if v == N {
 			return true
 		}
 
 	}
 	return false
 }
-func hasThree(in string) bool {
-	found := map[rune]int{}
-	for _, c := range in {
-		found[c] = found[c] + 1
-	}
-	for _, v := range found {
-		if v == 3 {
-			return true
-		}
 
-	}
-	return false
+func hasTwo(in string) bool {
+	return hasN(in, 2)
+}
+func hasThree(in string) bool {
+	return hasN(in, 3)
 }
