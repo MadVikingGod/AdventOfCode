@@ -36,7 +36,6 @@ func getHttpOrLocal(day int) (io.ReadCloser, error) {
 
 func getLocal(day int) (*os.File, error) {
 	filePath := path.Join(os.Getenv("HOME"), "go", "src", "github.com", "madvikinggod", "AdventOfCode", "2018", fmt.Sprintf("AoCDay%d", day), "input")
-	fmt.Println(filePath)
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
