@@ -39,6 +39,27 @@ func main() {
 	fmt.Println(shortest)
 }
 
+func iterative(input []byte) int {
+	out, cont := react(input)
+	for cont {
+		out, cont = react(out)
+	}
+	return len(out)
+}
+
+func recuse(input []byte) int {
+	return len(reactRecursive(input))
+}
+
+func reactRecursive(input []byte) []byte {
+	for i := 1; i < len(input); i++ {
+		if input[i-1]^byte(' ') == input[i] {
+			return reactRecursive(append(input[:i-1], input[i+1:]...))
+		}
+	}
+	return input
+}
+
 func react(input []byte) ([]byte, bool) {
 	for i := 1; i < len(input); i++ {
 		if input[i-1]^byte(' ') == input[i] {
