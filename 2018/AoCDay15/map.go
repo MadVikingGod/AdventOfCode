@@ -88,14 +88,14 @@ func (m gameMap) GetString(loc location) string {
 
 func (m gameMap) getUnits(loc []location) []string {
 	units := []string{}
-	for _,l := range loc {
-		if e,ok := m.elfs[l]; ok {
-			units= append(units, e.GoString())
+	for _, l := range loc {
+		if e, ok := m.elfs[l]; ok {
+			units = append(units, e.GoString())
 		}
-		if g,ok := m.goblins[l]; ok {
-			units= append(units, g.GoString())
+		if g, ok := m.goblins[l]; ok {
+			units = append(units, g.GoString())
 		}
-	}	
+	}
 	return units
 }
 
@@ -106,11 +106,11 @@ func (m gameMap) String() string {
 		for y := 0; y < m.y; y++ {
 			s := m.GetString(location{x, y})
 			if s == "E" || s == "G" {
-				units = append(units, location{x,y})
+				units = append(units, location{x, y})
 			}
 			b.WriteString(s)
 		}
-		if len(units)>0 {
+		if len(units) > 0 {
 			b.WriteString("\t{")
 			b.WriteString(strings.Join(m.getUnits(units), "}, {"))
 			b.WriteString("}")
@@ -148,11 +148,28 @@ func (m *gameMap) attack(loc location, dmg int) {
 	if e, ok := m.elfs[loc]; ok {
 		e.hitpoints -= dmg
 		m.elfs[loc] = e
+		if e.hitpoints <= 0 {
+			delete(m.elfs, loc)
+		}
 	}
 	if g, ok := m.goblins[loc]; ok {
 		g.hitpoints -= dmg
 		m.goblins[loc] = g
+		if g.hitpoints <= 0 {
+			delete(m.goblins, loc)
+		}
 	}
+}
+
+func (m gameMap) getHealth() int {
+	health := 0
+	for _, e := range m.elfs {
+		health += e.hitpoints
+	}
+	for _, g := range m.goblins {
+		health += g.hitpoints
+	}
+	return health
 }
 
 type mapSquare struct {

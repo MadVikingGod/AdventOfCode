@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/madvikinggod/AdventOfCode/2018/helpers"
 	"log"
+
+	"github.com/madvikinggod/AdventOfCode/2018/helpers"
 )
 
 func main() {
@@ -13,16 +14,51 @@ func main() {
 	}
 	gameMap := readMap(input)
 	fmt.Print(gameMap)
-	for i := 0; gameStep(gameMap); i++ {
-		fmt.Print(gameMap)
-		fmt.Printf("%#v\n", gameMap.goblins)
-		if i > 50 {
+	n := runGame(gameMap)
+	println(n, "*", gameMap.getHealth(), "=", n*gameMap.getHealth())
+
+	attackMap := readMap(input)
+	atkPower, rounds, health := findElfPower(attackMap)
+	fmt.Println(atkPower)
+	println(rounds, "*", health, "=", n*health)
+
+}
+
+func findElfPower(m *gameMap) (int, int, int) {
+	origMap := *m
+	attackPower := 4
+	rounds := 0
+	health := 0
+	for ; attackPower < 30; attackPower++ {
+		currentMap := origMap
+		currentMap.elfs = map[location]mapSquare{}
+		currentMap.goblins = map[location]mapSquare{}
+		for loc, g := range origMap.goblins {
+			currentMap.goblins[loc] = g
+		}
+		for loc, e := range origMap.elfs {
+			e.attackPower = attackPower
+			currentMap.elfs[loc] = e
+		}
+		rounds = runGame(&currentMap)
+		health = currentMap.getHealth()
+		fmt.Printf("%d, %d: %d * %d = %d\n", attackPower, len(currentMap.elfs), rounds, health, rounds*health)
+
+	}
+
+	return attackPower, rounds, health
+}
+
+func runGame(m *gameMap) int {
+	i := 0
+	for ; gameStep(m); i++ {
+		if i > 500 {
 			fmt.Println("OH NOES!")
 			break
 		}
-	}
-	fmt.Printf("%#v\n", gameMap.goblins)
 
+	}
+	return i
 }
 
 func gameStep(m *gameMap) bool {
@@ -58,15 +94,27 @@ func gameStep(m *gameMap) bool {
 
 			//Attack
 
-			for _, a := range dst.Adjecent() {
-				if _, ok := enemies[a]; ok {
-					m.attack(a, attackPower)
-					continue
-				}
+			enemy, attack := findTarget(dst, enemies)
+			if attack {
+				m.attack(enemy, attackPower)
 			}
 		}
 	}
 	return true
+}
+
+func findTarget(loc location, enemies map[location]mapSquare) (location, bool) {
+	targetHP := 0
+	var targetLoc location
+	found := false
+	for _, a := range loc.Adjecent() {
+		if e, ok := enemies[a]; ok && (found == false || e.hitpoints < targetHP) {
+			targetHP = e.hitpoints
+			targetLoc = a
+			found = true
+		}
+	}
+	return targetLoc, found
 }
 
 func findAdj(m gameMap, locs map[location]mapSquare) map[location]bool {
@@ -112,13 +160,11 @@ func findStep(m gameMap, start location, enemies map[location]mapSquare) (locati
 		if destinations[current.loc] {
 			return current.start, true
 		}
-		if start.x == 4 && start.y == 4 {
-			fmt.Println(current.loc, queue)
-		}
 		for _, a := range current.loc.Adjecent() {
 
 			if !m.isOccupied(a) && !visited[a] {
 				queue = append(queue, direction{a, current.start})
+				visited[a] = true
 			}
 		}
 	}
