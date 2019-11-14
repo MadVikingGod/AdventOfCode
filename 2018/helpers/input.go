@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+
 	"strconv"
 	"strings"
 )
@@ -35,12 +36,21 @@ func getHttpOrLocal(day int) (io.ReadCloser, error) {
 }
 
 func getLocal(day int) (*os.File, error) {
-	filePath := path.Join(os.Getenv("HOME"), "go", "src", "github.com", "madvikinggod", "AdventOfCode", "2018", fmt.Sprintf("AoCDay%d", day), "input")
-	f, err := os.Open(filePath)
+	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-	return f, nil
+	filePath := correctInputFile(wd, day)
+	return  os.Open(filePath)
+	
+}
+
+func correctInputFile(cwd string, Day int) string {
+	day := strconv.Itoa(Day)
+	if strings.HasSuffix(cwd, day) {
+		return path.Join(cwd, "input")
+	}
+	return path.Join(cwd, "AoCDay"+day, "input")
 }
 
 func getHttp(day int) (io.ReadCloser, error) {
