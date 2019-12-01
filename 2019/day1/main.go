@@ -16,7 +16,8 @@ func main() {
 	}
 	sum := 0
 	for _,m := range masses {
-		sum += fuelToLaunch(m)
+		f := fuelToLaunch(m)
+		sum += f + additionalFuel(f)
 	}
 	fmt.Println(sum)
 }
@@ -24,3 +25,15 @@ func main() {
 func fuelToLaunch(i int) int {
 	return (i/3)-2
 }
+
+func additionalFuel(start int) int {
+	s := fuelToLaunch(start)
+	// fmt.Println(s)
+	if s <=0  {
+		return 0
+	}
+	return s + additionalFuel(s)
+}
+
+//4918888 is too high
+//4916076
