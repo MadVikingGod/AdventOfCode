@@ -2,22 +2,37 @@ package intcode
 
 import "fmt"
 
+type executor func() bool
 type Intcode struct {
 	Memory         []int
 	ProgramCounter int
+
+	opcodes map[int]executor
+
+	//This is just noodeling for registers that may be addded
+	registers [10]int
 }
 
 func New(memory []int) *Intcode {
-	return &Intcode{
+	ic := &Intcode{
 		Memory: append([]int(nil), memory...),
 	}
+	ic.register()
+	return ic
 }
 
 func (ic Intcode) Read(position int) int {
 	return ic.Memory[position]
 }
+func (ic Intcode) ReadPtr(position int) int {
+	return ic.Memory[ic.Memory[position]]
+}
+
 func (ic *Intcode) Write(position, data int) {
 	ic.Memory[position] = data
+}
+func (ic *Intcode) WritePtr(position, data int) {
+	ic.Memory[ic.Memory[position]] = data
 }
 
 func (ic *Intcode) Run() (int, error) {
@@ -31,40 +46,51 @@ func (ic *Intcode) Run() (int, error) {
 	return ic.Read(0), nil
 
 }
-
 func (ic *Intcode) decode() (bool, error) {
 	if ic.ProgramCounter >= len(ic.Memory) {
 		return false, fmt.Errorf("program ran off memory: %d", ic.ProgramCounter)
 	}
-	switch ic.Memory[ic.ProgramCounter] {
-	case 1:
-		ic.add()
-		return false, nil
-	case 2:
-		ic.mul()
-		return false, nil
-	case 99:
-		return true, nil
-	default:
-		return false, fmt.Errorf("not implemented, opcode %d at %d", ic.Memory[ic.ProgramCounter], ic.ProgramCounter)
+	oc := ic.Memory[ic.ProgramCounter]
+	f, ok := ic.opcodes[oc]
+	if !ok {
+		return false, fmt.Errorf("not implemented, opcode %d at %d", oc, ic.ProgramCounter)
+	}
+	return f(), nil
+
+}
+
+func (ic *Intcode) register() {
+	if ic == nil {
+		return
+	}
+	if ic.opcodes == nil {
+		ic.opcodes = map[int]executor{}
+	}
+
+	ic.opcodes[1] = ic.binary(add2)
+	ic.opcodes[2] = ic.binary(mul2)
+	ic.opcodes[99] = executor(func() bool {
+		return true
+	})
+}
+
+func (ic *Intcode) binary(f func(int, int) int) executor {
+	return func() bool {
+		pc := ic.ProgramCounter
+		imm1 := ic.ReadPtr(pc + 1)
+		imm2 := ic.ReadPtr(pc + 2)
+
+		out := f(imm1, imm2)
+
+		ic.WritePtr(pc+3, out)
+		ic.ProgramCounter += 4
+		return false
 	}
 }
 
-// add() returns [pc+1] + [pc+2] into [pc+3]
-func (ic *Intcode) add() {
-	pc := ic.ProgramCounter
-	R1 := ic.Read(pc + 1)
-	R2 := ic.Read(pc + 2)
-	dest := ic.Read(pc + 3)
-	ic.Write(dest, ic.Read(R1)+ic.Read(R2))
-	ic.ProgramCounter += 4
+func add2(r1, r2 int) int {
+	return r1 + r2
 }
-
-func (ic *Intcode) mul() {
-	pc := ic.ProgramCounter
-	R1 := ic.Read(pc + 1)
-	R2 := ic.Read(pc + 2)
-	dest := ic.Read(pc + 3)
-	ic.Write(dest, ic.Read(R1)*ic.Read(R2))
-	ic.ProgramCounter += 4
+func mul2(r1, r2 int) int {
+	return r1 * r2
 }
