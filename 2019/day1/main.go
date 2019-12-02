@@ -17,6 +17,7 @@ func main() {
 	sum := 0
 	for _,m := range masses {
 		f := fuelToLaunch(m)
+		// This was added for part two
 		sum += f + additionalFuel(f)
 	}
 	fmt.Println(sum)
