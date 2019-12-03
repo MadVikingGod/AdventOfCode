@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MadVikingGod/AdventOfCode/2018/helpers"
+	"github.com/madvikinggod/AdventOfCode/2018/helpers"
 )
 
 func main() {

@@ -5,35 +5,10 @@ import (
 	"strconv"
 	"strings"
 	"github.com/madvikinggod/AdventOfCode/2018/helpers"
+	"github.com/madvikinggod/AdventOfCode/2019/location"
 )
 
-type location struct {
-	x int
-	y int
-}
-
-func abs(a int) int {
-	if a < 0 {
-		return -a
-	}
-	return a
-}
-func (l location) distance(l2 location) int {
-
-	return abs(l.x-l2.x) + abs(l.y-l2.y)
-}
-func (l location) add(l2 location) location {
-	return location{l.x+l2.x, l.y+l2.y}
-}
-
-var dir = map[string]location{
-	"R": location{1,0},
-	"L": location{-1,0},
-	"U": location{0,1},
-	"D": location{0,-1},
-}
-
-type grid map[location]int
+type grid map[location.Location]int
 
 type direction struct {
 	dir    string
@@ -41,14 +16,22 @@ type direction struct {
 }
 
 func (g grid) addWire(steps []direction) {
-	current := location{0, 0}
-
+	current := location.New(0,0)
+	var dir = map[string]location.Location{
+		"R": location.New(1,0),
+		"L": location.New(-1,0),
+		"U": location.New(0,1),
+		"D": location.New(0,-1),
+	}
+	// This is our step counter
 	count := 0
 	for _, step := range steps {
 		for i := 1; i <= step.length; i++ {
 			count++
-			current = current.add(dir[step.dir])
+			current = current.Add(dir[step.dir])
 
+			// Because the counter is monotonic, if we have been here
+			// the stored value will always be smallest
 			if _, ok := g[current]; !ok {
 				g[current] = count
 			}
@@ -61,7 +44,7 @@ func (g grid) compare(g2 grid) (distance int, delay int) {
 	delay =99999999999
 	for loc := range g {
 		if _, ok := g2[loc]; ok {
-			dist := loc.distance(location{0, 0})
+			dist := loc.Manhantan()
 			if dist < distance {
 				distance = dist
 			}
