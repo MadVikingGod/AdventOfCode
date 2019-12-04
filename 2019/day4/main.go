@@ -27,6 +27,8 @@ func main() {
 
 }
 
+// Note: all of these checks would need a refactor if input was arbitrary length
+
 func doesntDecrease(num string) bool {
 	return num[0] <= num[1] &&
 		num[1] <= num[2] &&
@@ -43,6 +45,10 @@ func hasDouble(num string) bool {
 }
 
 func hasDoubleExtended(num string) bool {
+	// This was done because a number like 333445 is valid
+	// What we are checking is for groups like ^112, 2112, or 211$ exist.
+	// This is fine because the middle group (2112) can only be in 3 places
+	// because the number is 6 digits long.
 	first := num[0] == num[1] && num[1] != num[2]
 	second := num[0] != num[1] && num[1] == num[2] && num[2] != num[3]
 	third := num[1] != num[2] && num[2] == num[3] && num[3] != num[4]
