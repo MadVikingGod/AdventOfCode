@@ -37,7 +37,7 @@ func TestIntcode_add(t *testing.T) {
 				Memory:         tt.fields.Memory,
 				ProgramCounter: tt.fields.ProgramCounter,
 			}
-			ic.binary(add2)()
+			ic.trinary(false, false, add2)()
 			if ic.ProgramCounter != tt.want.ProgramCounter {
 				t.Errorf("ProgramCounter does not match got %d, want %d", ic.ProgramCounter, tt.want.ProgramCounter)
 			}
@@ -80,7 +80,7 @@ func TestIntcode_mul(t *testing.T) {
 				Memory:         tt.fields.Memory,
 				ProgramCounter: tt.fields.ProgramCounter,
 			}
-			ic.binary(mul2)()
+			ic.trinary(false, false, mul2)()
 			if ic.ProgramCounter != tt.want.ProgramCounter {
 				t.Errorf("ProgramCounter does not match got %d, want %d", ic.ProgramCounter, tt.want.ProgramCounter)
 			}
