@@ -1,64 +1,46 @@
 package main
 
-
 import (
+	"fmt"
 	"github.com/madvikinggod/AdventOfCode/2018/helpers"
 	"strings"
-	"fmt"
 )
 
 type node struct {
-	name string
-	children []*node
-	parent *node
+	depth  int
+	parent string
 }
 
-func New(name string) *node {
-	return &node{
-		name: name,
-		children: []*node{},
-	}
-}
+type graph map[string]node
 
-func (n *node) depth() int {
-	if n.name == "COM" {
+func (g graph) depth(n string) int {
+
+	node, ok := g[n]
+	if !ok {
 		return 0
 	}
-	return 1 + n.parent.depth()
-}
-
-func (n *node) lineage() map[string]int {
-	count :=0 
-	current := n
-	lin := map[string]int {
-		n.name: 0,
+	if node.depth > 0 {
+		return node.depth
 	}
-	for current.name != "COM" {
-		current = current.parent
-		count++
-		lin[current.name] = count
-	}
-	return lin
-}
-
-func (n *node) dist(dest *node) int {
-	linN := n.lineage()
-	linD := dest.lineage()
-	//find min common ancestor
-	min := 9000
-	ddpeth := 0
-	for name, depth := range linN {
-		d,ok := linD[name]
-		if ok && depth < min {
-			min = depth
-			ddpeth = d
-		}
-	}
-
-	return min + ddpeth -2
+	node.depth = g.depth(node.parent) + 1
+	g[n] = node
+	return node.depth
 
 }
 
+func (g graph) lineage(n string) graph {
+	out := graph{}
+	if _, ok := g[n]; !ok {
+		return out
+	}
+
+	for g[n].parent != "" {
+		out[n] = g[n]
+		n = g[n].parent
+	}
+	return out
+
+}
 
 func main() {
 	input, err := helpers.GetInput(6)
@@ -66,78 +48,32 @@ func main() {
 		panic(err)
 	}
 
-	input = []string {
-		"COM)B",
-		"B)C",
-		"C)D",
-		"D)E",
-		"E)F",
-		"B)G",
-		"G)H",
-		"D)I",
-		"E)J",
-		"J)K",
-		"K)L",
-		"K)YOU",
-		"I)SAN",
-	}
+	g := graph{}
 
-
-	head := &node{
-		name: "COM",
-		children: []*node{},
-	}
-	graph := map[string]*node {
-		"COM": head,
-	}
 	for _, orbit := range input {
 		planets := strings.Split(orbit, ")")
-		c, ok := graph[planets[0]]
-		if  !ok {
-			c = New(planets[0])
-			graph[planets[0]] = c
-		}
-		o, ok := graph[planets[1]]
-		if  !ok {
-			o = New(planets[1])
-			graph[planets[1]] = o
-		}
-		o.parent = c
-		c.children = append(c.children, o)
-	}
-	fmt.Println(len(graph))
-	fmt.Println(graph["COM"].children[0].name)
 
-	sum :=0
-	for _, node := range graph {
-		sum += node.depth()
+		g[planets[1]] = node{parent: planets[0]}
+
+	}
+
+	sum := 0
+	for node := range g {
+		sum += g.depth(node)
 	}
 	fmt.Println(sum)
 
-	you := graph["YOU"]
-	san := graph["SAN"]
-	youl := you.lineage()
-	sanl := san.lineage()
-	
-	
-	common := map[string][]int{}
-	for name,y := range youl {
-		if s,ok := sanl[name]; ok{
-			common[name] = []int{y,s}
-		}
-	}
-	min := 900
-	for _,v := range common {
-		if v[0]<min {
-			fmt.Println(v)
-			min = v[0]
+	youl := g.lineage(g["YOU"].parent)
+	sanl := g.lineage(g["SAN"].parent)
+
+	max := 0
+
+	for name, y := range youl {
+		if _, ok := sanl[name]; ok && y.depth > max {
+			max = y.depth
 		}
 	}
 
-	fmt.Println(common)
-	fmt.Println(len(common))
-
-	fmt.Println(you.dist(san))
+	// This has the -2 because the depth of the parrent is 1 less then the depth of You and Santa 
+	fmt.Println(g["YOU"].depth - max + g["SAN"].depth - max - 2)
 }
-
-//551
