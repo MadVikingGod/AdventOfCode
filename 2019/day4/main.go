@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"time"
 )
 
 func main() {
+	start := time.Now()
 	min := 235741
 	max := 706948
 
@@ -24,7 +26,7 @@ func main() {
 	}
 	fmt.Println(count)
 	fmt.Println(count2)
-
+	fmt.Println(time.Now().Sub(start))
 }
 
 // Note: all of these checks would need a refactor if input was arbitrary length
