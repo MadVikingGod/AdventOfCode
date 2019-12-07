@@ -13,20 +13,18 @@ type Intcode struct {
 
 	opcodes map[int]executor
 
-	in  io.Reader
-	out io.Writer
-
-	//This is just noodeling for registers that may be addded
-	registers [10]int
+	In  io.Reader
+	buffer []string
+	Out io.Writer
 }
 
 func New(memory []int) *Intcode {
 	ic := &Intcode{
 		Memory: append([]int(nil), memory...),
-		in:     os.Stdin,
-		out:    os.Stdout,
+		In:     os.Stdin,
+		Out:    os.Stdout,
 	}
-	ic.register()
+	ic.Register()
 	return ic
 }
 
@@ -55,7 +53,7 @@ func (ic *Intcode) decode() (bool, error) {
 
 }
 
-func (ic *Intcode) register() {
+func (ic *Intcode) Register() {
 	if ic == nil {
 		return
 	}
@@ -72,7 +70,7 @@ func (ic *Intcode) register() {
 	ic.registerTrinary(7, less)
 	ic.registerTrinary(8, equal)
 
-	ic.opcodes[3] = ic.store(ic.in)
+	ic.opcodes[3] = ic.store(ic.In)
 	ic.opcodes[4] = ic.Uniary(ic.ReadPtr, ic.output)
 	ic.opcodes[104] = ic.Uniary(ic.Read, ic.output)
 

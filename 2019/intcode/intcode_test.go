@@ -50,7 +50,7 @@ func TestIntcode_add(t *testing.T) {
 				Memory:         tt.fields.Memory,
 				ProgramCounter: tt.fields.ProgramCounter,
 			}
-			ic.register()
+			ic.Register()
 			halt, err := ic.decode()
 			if halt {
 				t.Errorf("add should not halt execution")
@@ -111,7 +111,7 @@ func TestIntcode_mul(t *testing.T) {
 				Memory:         tt.fields.Memory,
 				ProgramCounter: tt.fields.ProgramCounter,
 			}
-			ic.register()
+			ic.Register()
 			halt, err := ic.decode()
 			if halt {
 				t.Errorf("mul should not halt execution")
@@ -213,7 +213,7 @@ func TestIntcode_decode(t *testing.T) {
 				Memory:         tt.fields.Memory,
 				ProgramCounter: tt.fields.ProgramCounter,
 			}
-			ic.register()
+			ic.Register()
 			got, err := ic.decode()
 			if (err != nil) != tt.want.err {
 				t.Errorf("Intcode.decode() error = %v, wantErr %v", err, tt.want.err)
@@ -428,10 +428,10 @@ func TestIntcode_Run_input_output(t *testing.T) {
 			output := &strings.Builder{}
 			ic := Intcode{
 				Memory: tt.fields.Memory,
-				in:     tt.fields.in,
-				out:    output,
+				In:     tt.fields.in,
+				Out:    output,
 			}
-			ic.register()
+			ic.Register()
 			_, err := ic.Run()
 			if err != nil {
 				t.Errorf("Intcode.Run() error = %v, wantErr nil", err)
