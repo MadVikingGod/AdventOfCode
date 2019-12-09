@@ -12,34 +12,22 @@ func (ic *Intcode) store(input io.Reader) executor {
 	if ic.buffer == nil {
 		ic.buffer = []string{}
 	}
+	scanner := bufio.NewScanner(input)
 	return func() bool {
-		var text string
-		if len(ic.buffer) >0 {
-			text = ic.buffer[0]
-			ic.buffer = ic.buffer[1:]
-		} else {
-			fmt.Println("Reading input")
-			scanner := bufio.NewScanner(input)
-			if !scanner.Scan() {
-				fmt.Println("No data")
-				return true
-			}
-			text = scanner.Text()
-			for scanner.Scan() {
-				ic.buffer = append(ic.buffer, scanner.Text())
-			}
-			
+		if !scanner.Scan() {
+			fmt.Println(ic.Tag, "Input was closed before receiving")
+			return true
 		}
-
-		pc := ic.ProgramCounter
-				
+		text := scanner.Text()
 		text = strings.TrimSpace(text)
+
 		val, err := strconv.Atoi(text)
 		if err != nil {
 			fmt.Println(err)
 			return true
 		}
 
+		pc := ic.ProgramCounter
 		ic.WritePtr(pc+1, val)
 		ic.ProgramCounter += 2
 		return false
@@ -48,5 +36,6 @@ func (ic *Intcode) store(input io.Reader) executor {
 }
 
 func (ic *Intcode) output(val int) {
+	//fmt.Println("Writing output:", ic.Tag, val)
 	fmt.Fprintf(ic.Out, "%d\n", val)
 }

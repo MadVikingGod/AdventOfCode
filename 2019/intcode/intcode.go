@@ -13,9 +13,11 @@ type Intcode struct {
 
 	opcodes map[int]executor
 
-	In  io.Reader
+	In     io.Reader
 	buffer []string
-	Out io.Writer
+	Out    io.Writer
+
+	Tag string
 }
 
 func New(memory []int) *Intcode {
@@ -75,6 +77,7 @@ func (ic *Intcode) Register() {
 	ic.opcodes[104] = ic.Uniary(ic.Read, ic.output)
 
 	ic.opcodes[99] = executor(func() bool {
+		//fmt.Println("Stopping ", ic.Tag )
 		return true
 	})
 }

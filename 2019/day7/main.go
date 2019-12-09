@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io"
+	"strconv"
+
 	// "strconv"
 	"strings"
 	"sync"
@@ -59,42 +61,71 @@ func main() {
 
 	// fmt.Println(max)
 
-	// a, b, c, d, e := 9, 8, 7, 6, 5
-	a, b, c, d, e := 4,3,2,1,0
+	max := 0
 
-	buffaRead, buffaWrite := io.Pipe()
-	buffbRead, buffbWrite := io.Pipe()
-	buffcRead, buffcWrite := io.Pipe()
-	buffdRead, buffdWrite := io.Pipe()
-	buffeRead, buffeWrite := io.Pipe()
+	for a := 5; a < 10; a++ {
+		for b := 5; b < 10; b++ {
+			for c := 5; c < 10; c++ {
+				for d := 5; d < 10; d++ {
+					for e := 5; e < 10; e++ {
+						buffaRead, buffaWrite := io.Pipe()
+						buffbRead, buffbWrite := io.Pipe()
+						buffcRead, buffcWrite := io.Pipe()
+						buffdRead, buffdWrite := io.Pipe()
+						buffeRead, buffeWrite := io.Pipe()
 
-	buff := &strings.Builder{}
+						buff := &strings.Builder{}
 
-	outaWriter := io.MultiWriter(buffaWrite, &logger{"a"})
-	outbWriter := io.MultiWriter(buffbWrite, &logger{"b"})
-	outcWriter := io.MultiWriter(buffcWrite, &logger{"c"})
-	outdWriter := io.MultiWriter(buffdWrite, &logger{"d"})
-	outeWriter := io.MultiWriter(buff, buffeWrite, &logger{"e"})
+						//outeWriter := io.MultiWriter(buff,  &logger{"e"})
+						outeWriter := io.MultiWriter(buff, buffeWrite)
 
-	wg := &sync.WaitGroup{}
-	wg.Add(5)
+						wg := &sync.WaitGroup{}
+						wg.Add(4)
+						wg2 := &sync.WaitGroup{}
+						wg2.Add(1)
 
-	go feedbackAmp(buffeRead, outaWriter, wg)
-	go feedbackAmp(buffaRead, outbWriter, wg)
-	go feedbackAmp(buffbRead, outcWriter, wg)
-	go feedbackAmp(buffcRead, outdWriter, wg)
-	go feedbackAmp(buffdRead, outeWriter, wg)
+						//inaReader := io.MultiReader(strings.NewReader(fmt.Sprintf("%d\n0\n", a)))
 
-	fmt.Fprintf(outdWriter, "%d\n", e)
-	fmt.Fprintf(outcWriter, "%d\n", d)
-	fmt.Fprintf(outbWriter, "%d\n", c)
-	fmt.Fprintf(outaWriter, "%d\n", b)
-	fmt.Fprintf(outeWriter, "%d\n0\n", a)
+						inaReader := io.MultiReader(strings.NewReader(fmt.Sprintf("%d\n0\n", a)), buffeRead)
+						inbReader := io.MultiReader(strings.NewReader(fmt.Sprintf("%d\n", b)), buffaRead)
+						incReader := io.MultiReader(strings.NewReader(fmt.Sprintf("%d\n", c)), buffbRead)
+						indReader := io.MultiReader(strings.NewReader(fmt.Sprintf("%d\n", d)), buffcRead)
+						ineReader := io.MultiReader(strings.NewReader(fmt.Sprintf("%d\n", e)), buffdRead)
 
+						go feedbackAmp(inaReader, buffaWrite, wg, "a")
+						go feedbackAmp(inbReader, buffbWrite, wg, "b")
+						go feedbackAmp(incReader, buffcWrite, wg, "c")
+						go feedbackAmp(indReader, buffdWrite, wg, "d")
+						go feedbackAmp(ineReader, outeWriter, wg2, "e")
+						wg.Wait()
 
+						buffaWrite.Close()
+						buffbWrite.Close()
+						buffcWrite.Close()
+						buffdWrite.Close()
+						buffeWrite.Close()
+
+						outputs := strings.Split(buff.String(), "\n")
+
+						test, err := strconv.Atoi(outputs[len(outputs)-2])
+						if err != nil {
+							fmt.Println("ERROR:", a, b, c, d, err)
+						}
+						if test > max {
+							fmt.Println("OUTPUTS", a, b, c, d, e, outputs[len(outputs)-2])
+							max = test
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	fmt.Println("MAX", max)
 }
 
-func feedbackAmp(read io.Reader, write io.Writer, wg *sync.WaitGroup) {
+func feedbackAmp(read io.Reader, write io.Writer, wg *sync.WaitGroup, tag string) {
 
 	mem := make([]int, len(input))
 	copy(mem, input)
@@ -102,6 +133,7 @@ func feedbackAmp(read io.Reader, write io.Writer, wg *sync.WaitGroup) {
 		Memory: mem,
 		In:     read,
 		Out:    write,
+		Tag:    tag,
 	}
 	ic.Register()
 
@@ -131,3 +163,5 @@ func amp(setting, in string) (string, error) {
 	return strings.TrimSpace(buff.String()), err
 
 }
+
+//4305190943
