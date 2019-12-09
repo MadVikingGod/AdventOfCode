@@ -68,6 +68,13 @@ func main() {
 			for c := 5; c < 10; c++ {
 				for d := 5; d < 10; d++ {
 					for e := 5; e < 10; e++ {
+
+						if a == b || a == c || a == d || a == e ||
+							b == c || b == d || b == e || c == d ||
+							c == e || d == e {
+							continue
+						}
+
 						buffaRead, buffaWrite := io.Pipe()
 						buffbRead, buffbWrite := io.Pipe()
 						buffcRead, buffcWrite := io.Pipe()
