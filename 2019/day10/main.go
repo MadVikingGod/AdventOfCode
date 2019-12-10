@@ -41,10 +41,6 @@ func main() {
 		}
 		fmt.Println(count, astroids[199])
 
-		for _, astroid := range astroids {
-			dir := base.Direction(astroid)
-			fmt.Printf("(%d/%d): %g, ", dir.Y, dir.X, angle(dir))
-		}
 		break
 	}
 
@@ -71,26 +67,13 @@ func (space Space) scan(base location.Location) []location.Location {
 		}
 	}
 	less := func(i, j int) bool {
-		I := angle(base.Direction(astroids[i]))
-		J := angle(base.Direction(astroids[j]))
+		I := base.Direction(astroids[i]).WeightedAngle()
+		J := base.Direction(astroids[j]).WeightedAngle()
 		return I < J
 	}
 
 	sort.Slice(astroids, less)
 	return astroids
-}
-
-func angle(dir location.Location) float64 {
-	if dir.X == 0 && dir.Y < 0 {
-		return -100.0
-	}
-	if dir.X == 0 && dir.Y > 0 {
-		return 0
-	}
-	if dir.X > 0 {
-		return float64(dir.Y)/float64(dir.X) - 50
-	}
-	return float64(dir.Y)/float64(dir.X) + 50
 }
 
 func bestLocation(space Space) (location.Location, int) {

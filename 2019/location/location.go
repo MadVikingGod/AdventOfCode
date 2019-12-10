@@ -1,8 +1,8 @@
 package location
 
 type Location struct {
-	X int
-	Y int
+	x int
+	y int
 }
 
 func New(x, y int) Location {
@@ -26,25 +26,39 @@ func gcd(a, b int) int {
 }
 
 func (l Location) Distance(l2 Location) int {
-	return abs(l.X-l2.X) + abs(l.Y-l2.Y)
+	return abs(l.x-l2.x) + abs(l.y-l2.y)
 }
 
 func (l Location) Manhantan() int {
-	return abs(l.X) + abs(l.Y)
+	return abs(l.x) + abs(l.y)
 }
 
 func (l Location) Add(l2 Location) Location {
-	return Location{l.X + l2.X, l.Y + l2.Y}
+	return Location{l.x + l2.x, l.y + l2.y}
 }
 
 func (l Location) Direction(l2 Location) Location {
-	x := l2.X - l.X
-	y := l2.Y - l.Y
+	x := l2.x - l.x
+	y := l2.y - l.y
 	d := gcd(x, y)
 
 	return Location{x / d, y / d}
 }
 
 func (l Location) Mul(a int) Location {
-	return Location{l.X * a, l.Y * a}
+	return Location{l.x * a, l.y * a}
+}
+
+//WeightedAngle This gives the angle of direction.  This expects the angle to be less then 50
+func (dir Location) WeightedAngle() float64 {
+	if dir.x == 0 && dir.y < 0 {
+		return -100.0
+	}
+	if dir.x == 0 && dir.y > 0 {
+		return 0
+	}
+	if dir.x > 0 {
+		return float64(dir.y)/float64(dir.x) - 50
+	}
+	return float64(dir.y)/float64(dir.x) + 50
 }

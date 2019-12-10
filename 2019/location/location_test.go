@@ -79,13 +79,13 @@ func TestLocation_Direction(t *testing.T) {
 			},
 			args: args{
 				l2: Location{
-					X: 3,
-					Y: 3,
+					x: 3,
+					y: 3,
 				},
 			},
 			want: Location{
-				X: -1,
-				Y: -1,
+				x: -1,
+				y: -1,
 			},
 		},
 		{
@@ -96,21 +96,21 @@ func TestLocation_Direction(t *testing.T) {
 			},
 			args: args{
 				l2: Location{
-					X: 3,
-					Y: 4,
+					x: 3,
+					y: 4,
 				},
 			},
 			want: Location{
-				X: -2,
-				Y: -1,
+				x: -2,
+				y: -1,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := Location{
-				X: tt.fields.x,
-				Y: tt.fields.y,
+				x: tt.fields.x,
+				y: tt.fields.y,
 			}
 			if got := l.Direction(tt.args.l2); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Direction() = %v, want %v", got, tt.want)
