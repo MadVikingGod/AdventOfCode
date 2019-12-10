@@ -10,6 +10,7 @@ type executor func() bool
 type Intcode struct {
 	Memory         []int
 	ProgramCounter int
+	Base           int
 
 	opcodes map[int]executor
 
@@ -72,9 +73,15 @@ func (ic *Intcode) Register() {
 	ic.registerTrinary(7, less)
 	ic.registerTrinary(8, equal)
 
-	ic.opcodes[3] = ic.store(ic.In)
+	ic.opcodes[3] = ic.store(ic.In, ic.WritePtr)
+	ic.opcodes[203] = ic.store(ic.In, ic.WriteBase)
 	ic.opcodes[4] = ic.Uniary(ic.ReadPtr, ic.output)
 	ic.opcodes[104] = ic.Uniary(ic.Read, ic.output)
+	ic.opcodes[204] = ic.Uniary(ic.ReadBase, ic.output)
+
+	ic.opcodes[9] = ic.Uniary(ic.ReadPtr, ic.addBase)
+	ic.opcodes[109] = ic.Uniary(ic.Read, ic.addBase)
+	ic.opcodes[209] = ic.Uniary(ic.ReadBase, ic.addBase)
 
 	ic.opcodes[99] = executor(func() bool {
 		//fmt.Println("Stopping ", ic.Tag )
@@ -109,4 +116,8 @@ func (ic *Intcode) jmpeq(reader1, reader2 reader) executor {
 		ic.ProgramCounter += 3
 		return false
 	}
+}
+
+func (ic *Intcode) addBase(val int) {
+	ic.Base += val
 }

@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (ic *Intcode) store(input io.Reader) executor {
+func (ic *Intcode) store(input io.Reader, writer writer) executor {
 	if ic.buffer == nil {
 		ic.buffer = []string{}
 	}
@@ -28,7 +28,7 @@ func (ic *Intcode) store(input io.Reader) executor {
 		}
 
 		pc := ic.ProgramCounter
-		ic.WritePtr(pc+1, val)
+		writer(pc+1, val)
 		ic.ProgramCounter += 2
 		return false
 	}
@@ -36,6 +36,6 @@ func (ic *Intcode) store(input io.Reader) executor {
 }
 
 func (ic *Intcode) output(val int) {
-	//fmt.Println("Writing output:", ic.Tag, val)
+	// fmt.Println("Writing output:", ic.Tag, val)
 	fmt.Fprintf(ic.Out, "%d\n", val)
 }
