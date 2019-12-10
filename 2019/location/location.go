@@ -1,5 +1,7 @@
 package location
 
+import "math"
+
 type Location struct {
 	x int
 	y int
@@ -49,7 +51,9 @@ func (l Location) Mul(a int) Location {
 	return Location{l.x * a, l.y * a}
 }
 
-//WeightedAngle This gives the angle of direction.  This expects the angle to be less then 50
+//WeightedAngle This isn't a real angle, but the ratio of opp/adj
+// It expects the abs(ratio) to be less then 50.
+// It is weighted this way to make up (0,-1) the lowest, and
 func (dir Location) WeightedAngle() float64 {
 	if dir.x == 0 && dir.y < 0 {
 		return -100.0
@@ -61,4 +65,10 @@ func (dir Location) WeightedAngle() float64 {
 		return float64(dir.y)/float64(dir.x) - 50
 	}
 	return float64(dir.y)/float64(dir.x) + 50
+}
+
+func (l Location) Angle(l2 Location) float64 {
+	x := float64(l2.x - l.x)
+	y := float64(l2.y - l.y)
+	return math.Atan2(y, x)
 }
