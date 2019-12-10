@@ -7,7 +7,7 @@ import (
 
 func main() {
 	input, err := helpers.GetInput(1)
-	if err!= nil {
+	if err != nil {
 		panic(err)
 	}
 	masses, err := helpers.GetInts(input)
@@ -15,7 +15,7 @@ func main() {
 		panic(err)
 	}
 	sum := 0
-	for _,m := range masses {
+	for _, m := range masses {
 		f := fuelToLaunch(m)
 		// This was added for part two
 		sum += f + additionalFuel(f)
@@ -24,13 +24,13 @@ func main() {
 }
 
 func fuelToLaunch(i int) int {
-	return (i/3)-2
+	return (i / 3) - 2
 }
 
 func additionalFuel(start int) int {
 	s := fuelToLaunch(start)
 	// fmt.Println(s)
-	if s <=0  {
+	if s <= 0 {
 		return 0
 	}
 	return s + additionalFuel(s)

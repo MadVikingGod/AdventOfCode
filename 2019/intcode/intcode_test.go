@@ -292,7 +292,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 0, 4, 0, 99},
 				in:     strings.NewReader("5\n"),
 			},
-			wantOut: "Output: 5\n",
+			wantOut: "5\n",
 		},
 		{
 			name: "position mode != 8",
@@ -300,7 +300,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8},
 				in:     strings.NewReader("5\n"),
 			},
-			wantOut: "Output: 0\n",
+			wantOut: "0\n",
 		},
 		{
 			name: "position mode == 8",
@@ -308,7 +308,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8},
 				in:     strings.NewReader("8\n"),
 			},
-			wantOut: "Output: 1\n",
+			wantOut: "1\n",
 		},
 		{
 			name: "position mode < 8",
@@ -316,7 +316,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8},
 				in:     strings.NewReader("5\n"),
 			},
-			wantOut: "Output: 1\n",
+			wantOut: "1\n",
 		},
 		{
 			name: "position mode !< 8",
@@ -324,7 +324,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8},
 				in:     strings.NewReader("129\n"),
 			},
-			wantOut: "Output: 0\n",
+			wantOut: "0\n",
 		},
 		{
 			name: "immediate mode != 8",
@@ -332,7 +332,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 3, 1108, -1, 8, 3, 4, 3, 99},
 				in:     strings.NewReader("5\n"),
 			},
-			wantOut: "Output: 0\n",
+			wantOut: "0\n",
 		},
 		{
 			name: "immediate mode == 8",
@@ -340,7 +340,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 3, 1108, -1, 8, 3, 4, 3, 99},
 				in:     strings.NewReader("8\n"),
 			},
-			wantOut: "Output: 1\n",
+			wantOut: "1\n",
 		},
 		{
 			name: "immediate mode < 8",
@@ -348,7 +348,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 3, 1107, -1, 8, 3, 4, 3, 99},
 				in:     strings.NewReader("5\n"),
 			},
-			wantOut: "Output: 1\n",
+			wantOut: "1\n",
 		},
 		{
 			name: "immediate mode !< 8",
@@ -356,7 +356,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 3, 1107, -1, 8, 3, 4, 3, 99},
 				in:     strings.NewReader("129\n"),
 			},
-			wantOut: "Output: 0\n",
+			wantOut: "0\n",
 		},
 
 		{
@@ -365,7 +365,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9},
 				in:     strings.NewReader("0\n"),
 			},
-			wantOut: "Output: 0\n",
+			wantOut: "0\n",
 		},
 		{
 			name: "position mode jmp 1",
@@ -373,7 +373,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9},
 				in:     strings.NewReader("129\n"),
 			},
-			wantOut: "Output: 1\n",
+			wantOut: "1\n",
 		},
 		{
 			name: "immediate mode jmp 0",
@@ -381,7 +381,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1},
 				in:     strings.NewReader("0\n"),
 			},
-			wantOut: "Output: 0\n",
+			wantOut: "0\n",
 		},
 		{
 			name: "immediate mode jmp 1",
@@ -389,7 +389,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				Memory: []int{3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1},
 				in:     strings.NewReader("129\n"),
 			},
-			wantOut: "Output: 1\n",
+			wantOut: "1\n",
 		},
 
 		{
@@ -400,7 +400,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 					999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99},
 				in: strings.NewReader("4\n"),
 			},
-			wantOut: "Output: 999\n",
+			wantOut: "999\n",
 		},
 		{
 			name: "day5 == 8",
@@ -410,7 +410,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 					999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99},
 				in: strings.NewReader("8\n"),
 			},
-			wantOut: "Output: 1000\n",
+			wantOut: "1000\n",
 		},
 		{
 			name: "day5 > 8",
@@ -420,7 +420,31 @@ func TestIntcode_Run_input_output(t *testing.T) {
 					999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99},
 				in: strings.NewReader("129\n"),
 			},
-			wantOut: "Output: 1001\n",
+			wantOut: "1001\n",
+		},
+		{
+			name: "day9 base mode quine",
+			fields: fields{
+				Memory: append([]int{109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99}, make([]int, 100)...),
+				in:     strings.NewReader(""),
+			},
+			wantOut: "109\n1\n204\n-1\n1001\n100\n1\n100\n1008\n100\n16\n101\n1006\n101\n0\n99\n",
+		},
+		{
+			name: "day9 base mode large number",
+			fields: fields{
+				Memory: []int{1102, 34915192, 34915192, 7, 4, 7, 99, 0},
+				in:     strings.NewReader(""),
+			},
+			wantOut: "1219070632396864\n",
+		},
+		{
+			name: "day9 base mode large number",
+			fields: fields{
+				Memory: []int{104, 1125899906842624, 99},
+				in:     strings.NewReader(""),
+			},
+			wantOut: "1125899906842624\n",
 		},
 	}
 	for _, tt := range tests {
@@ -438,7 +462,7 @@ func TestIntcode_Run_input_output(t *testing.T) {
 				return
 			}
 			if output.String() != tt.wantOut {
-				t.Errorf("output didn't match got %s, wanted %s", output.String(), tt.wantOut)
+				t.Errorf("output didn't match got %+q, wanted %+q", output.String(), tt.wantOut)
 			}
 		})
 	}
@@ -452,6 +476,6 @@ func BenchmarkDay2_Run(b *testing.B) {
 		memory := make([]int, len(input))
 		copy(memory, input)
 		ic := New(memory)
-		ic.Run()
+		_, _ = ic.Run()
 	}
 }

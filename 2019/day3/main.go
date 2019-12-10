@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 	"github.com/madvikinggod/AdventOfCode/2018/helpers"
 	"github.com/madvikinggod/AdventOfCode/2019/location"
+	"strconv"
+	"strings"
 )
 
 type grid map[location.Location]int
@@ -16,12 +16,12 @@ type direction struct {
 }
 
 func (g grid) addWire(steps []direction) {
-	current := location.New(0,0)
+	current := location.New(0, 0)
 	var dir = map[string]location.Location{
-		"R": location.New(1,0),
-		"L": location.New(-1,0),
-		"U": location.New(0,1),
-		"D": location.New(0,-1),
+		"R": location.New(1, 0),
+		"L": location.New(-1, 0),
+		"U": location.New(0, 1),
+		"D": location.New(0, -1),
 	}
 	// This is our step counter
 	count := 0
@@ -41,7 +41,7 @@ func (g grid) addWire(steps []direction) {
 }
 func (g grid) compare(g2 grid) (distance int, delay int) {
 	distance = 99999999999
-	delay =99999999999
+	delay = 99999999999
 	for loc := range g {
 		if _, ok := g2[loc]; ok {
 			dist := loc.Manhantan()

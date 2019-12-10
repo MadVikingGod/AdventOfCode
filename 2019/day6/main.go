@@ -74,6 +74,6 @@ func main() {
 		}
 	}
 
-	// This has the -2 because the depth of the parrent is 1 less then the depth of You and Santa 
+	// This has the -2 because the depth of the parrent is 1 less then the depth of You and Santa
 	fmt.Println(g["YOU"].depth - max + g["SAN"].depth - max - 2)
 }

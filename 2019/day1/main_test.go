@@ -41,19 +41,19 @@ func Test_additionalFuel(t *testing.T) {
 
 	tests := []struct {
 		start int
-		want int
+		want  int
 	}{
 		{
 			start: 2,
-			want: 0,
+			want:  0,
 		},
 		{
 			start: 654,
-			want: 312,
+			want:  312,
 		},
 		{
 			start: 33583,
-			want: 16763,
+			want:  16763,
 		},
 	}
 	for _, tt := range tests {

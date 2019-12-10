@@ -41,8 +41,8 @@ func getLocal(day int) (*os.File, error) {
 		return nil, err
 	}
 	filePath := correctInputFile(wd, day)
-	return  os.Open(filePath)
-	
+	return os.Open(filePath)
+
 }
 
 func correctInputFile(cwd string, Day int) string {
