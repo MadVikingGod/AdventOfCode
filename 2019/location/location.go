@@ -1,6 +1,9 @@
 package location
 
-import "math"
+import (
+	"image"
+	"math"
+)
 
 type Location struct {
 	x int
@@ -71,4 +74,40 @@ func (l Location) Angle(l2 Location) float64 {
 	x := float64(l2.x - l.x)
 	y := float64(l2.y - l.y)
 	return math.Atan2(y, x)
+}
+
+func (l Location) Max(l2 Location) Location {
+	x, y := 0, 0
+	if l.x > l2.x {
+		x = l.x
+	} else {
+		x = l2.x
+	}
+	if l.y > l2.y {
+		y = l.y
+	} else {
+		y = l2.y
+	}
+	return New(x, y)
+}
+func (l Location) Min(l2 Location) Location {
+	x, y := 0, 0
+	if l.x < l2.x {
+		x = l.x
+	} else {
+		x = l2.x
+	}
+	if l.y < l2.y {
+		y = l.y
+	} else {
+		y = l2.y
+	}
+	return New(x, y)
+}
+
+func (l Location) Point() image.Point {
+	return image.Pt(l.x, l.y)
+}
+func Rect(l1, l2 Location) image.Rectangle {
+	return image.Rect(l1.x, l1.y, l2.x, l2.y)
 }

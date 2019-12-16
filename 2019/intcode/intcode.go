@@ -23,7 +23,7 @@ type Intcode struct {
 
 func New(memory []int) *Intcode {
 	ic := &Intcode{
-		Memory: append([]int(nil), memory...),
+		Memory: append(append([]int(nil), memory...), make([]int, 1000)...),
 		In:     os.Stdin,
 		Out:    os.Stdout,
 	}
