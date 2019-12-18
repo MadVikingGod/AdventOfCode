@@ -104,6 +104,9 @@ func (l Location) Min(l2 Location) Location {
 	}
 	return New(x, y)
 }
+func (l Location) XY() (int, int) {
+	return l.x, l.y
+}
 
 func (l Location) Point() image.Point {
 	return image.Pt(l.x, l.y)
