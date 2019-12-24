@@ -9,16 +9,19 @@ import (
 )
 
 func (ic *Intcode) store(input io.Reader, writer writer) executor {
+	if ic.scanner == nil {
+		ic.scanner = bufio.NewScanner(input)
+	}
 	if ic.buffer == nil {
 		ic.buffer = []string{}
 	}
-	scanner := bufio.NewScanner(input)
+
 	return func() bool {
-		if !scanner.Scan() {
+		if !ic.scanner.Scan() {
 			fmt.Println(ic.Tag, "Input was closed before receiving")
 			return true
 		}
-		text := scanner.Text()
+		text := ic.scanner.Text()
 		text = strings.TrimSpace(text)
 
 		val, err := strconv.Atoi(text)

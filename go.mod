@@ -7,4 +7,5 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-test/deep v1.0.4
 	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
+	gonum.org/v1/gonum v0.6.1
 )

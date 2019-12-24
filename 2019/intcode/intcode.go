@@ -1,6 +1,7 @@
 package intcode
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -14,16 +15,17 @@ type Intcode struct {
 
 	opcodes map[int]executor
 
-	In     io.Reader
-	buffer []string
-	Out    io.Writer
+	In      io.Reader
+	buffer  []string
+	Out     io.Writer
+	scanner *bufio.Scanner
 
 	Tag string
 }
 
 func New(memory []int) *Intcode {
 	ic := &Intcode{
-		Memory: append(append([]int(nil), memory...), make([]int, 1000)...),
+		Memory: append(append([]int(nil), memory...), make([]int, 4000)...),
 		In:     os.Stdin,
 		Out:    os.Stdout,
 	}
@@ -57,6 +59,8 @@ func (ic *Intcode) decode() (bool, error) {
 }
 
 func (ic *Intcode) Register() {
+	ic.scanner = nil
+
 	if ic == nil {
 		return
 	}
