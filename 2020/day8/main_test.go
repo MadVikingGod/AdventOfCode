@@ -73,7 +73,7 @@ func TestComputer_Step(t *testing.T) {
 func Test_runTillLoop(t *testing.T) {
 
 	c := newComputer(testIns)
-	runTillLoop(c)
+	doesTerminate(c)
 	if c.acc != 5 {
 		t.Errorf("c.acc != 5, c.acc=%d", c.acc)
 	}

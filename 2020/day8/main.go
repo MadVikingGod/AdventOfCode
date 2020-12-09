@@ -8,8 +8,18 @@ import (
 
 func main() {
 	c := newComputer(input)
-	runTillLoop(c)
-	fmt.Println(c.acc)
+	cPart1 := c.Copy()
+	doesTerminate(cPart1)
+	fmt.Println(cPart1.acc)
+
+	for i := range c.Instructions {
+		c2 := c.Copy()
+		c2.swapNopJmp(i)
+		if doesTerminate(c2) {
+			fmt.Println(c2.acc)
+			break
+		}
+	}
 }
 
 type Computer struct {
@@ -27,7 +37,7 @@ func newComputer(input []string) *Computer {
 }
 
 func (c *Computer) Step() {
-	c.Instructions[c.ip](c)
+	c.Instructions[c.ip].run(c)
 }
 
 func (c *Computer) Copy() *Computer {
@@ -40,14 +50,18 @@ func (c *Computer) Copy() *Computer {
 	}
 }
 
-func (c *Computer) swapNopJmp()
+func (c *Computer) swapNopJmp(i int) {
+	c.Instructions[i] = swapNopJmp(c.Instructions[i])
+}
 
-func runTillLoop(c *Computer) {
-	seen := map[int]struct{}{}
-	ok := false
-	for ; !ok; _, ok = seen[c.ip] {
-		seen[c.ip] = struct{}{}
-		c.Step()
+func swapNopJmp(ins Instruction) Instruction {
+	switch in := ins.(type) {
+	case *Nop:
+		return &Jmp{i: in.i}
+	case *Jmp:
+		return &Nop{i: in.i}
+	default:
+		return ins
 	}
 }
 
@@ -64,39 +78,45 @@ func doesTerminate(c *Computer) bool {
 	return false
 }
 
-type Instruction func(*Computer)
+type Instruction interface {
+	run(*Computer)
+}
 
-func standard(f Instruction) Instruction {
-	return func(c *Computer) {
-		f(c)
-		c.ip += 1
-	}
+type Nop struct {
+	i int
 }
-func Nop() Instruction {
-	return standard(func(*Computer) {})
+
+func (*Nop) run(c *Computer) {
+	c.ip += 1
 }
-func Acc(i int) Instruction {
-	return standard(func(c *Computer) {
-		c.acc += i
-	})
+
+type Acc struct {
+	i int
 }
-func Jmp(i int) Instruction {
-	return func(c *Computer) {
-		c.ip += i
-	}
+
+func (a *Acc) run(c *Computer) {
+	c.acc += a.i
+	c.ip += 1
+}
+
+type Jmp struct {
+	i int
+}
+
+func (j *Jmp) run(c *Computer) {
+	c.ip += j.i
 }
 
 func newInstruction(s string) Instruction {
 	sp := strings.Split(strings.ToLower(s), " ")
+	i, _ := strconv.Atoi(sp[1])
 	switch sp[0] {
 	case "nop":
-		return Nop()
+		return &Nop{i: i}
 	case "acc":
-		i, _ := strconv.Atoi(sp[1])
-		return Acc(i)
+		return &Acc{i: i}
 	case "jmp":
-		i, _ := strconv.Atoi(sp[1])
-		return Jmp(i)
+		return &Jmp{i: i}
 	default:
 		panic(fmt.Sprintf("unkown command: \"%s\"", s))
 	}
