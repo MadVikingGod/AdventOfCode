@@ -2,16 +2,28 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
+	"os"
 	"reflect"
 	"strings"
+
+	"github.com/nfnt/resize"
 )
 
 func main() {
 	current := new(input)
 	nxt := &Ferry{seats: map[point]seat{}}
 
+	os.MkdirAll("2020/day11/img/part1", 0755)
+	i := 0
 	for !current.Equal(nxt) {
+		f, _ := os.Create(fmt.Sprintf("2020/day11/img/part1/img%03d.png", i))
+		png.Encode(f, current.Img())
 		current, nxt = current.Next(nxt)
+		f.Close()
+		i++
 	}
 	count := 0
 	for _, s := range current.seats {
@@ -21,11 +33,17 @@ func main() {
 	}
 	fmt.Println(count)
 
+	os.MkdirAll("2020/day11/img/part2", 0755)
 	current = new(input)
 	nxt = &Ferry{seats: map[point]seat{}}
 
+	i = 0
 	for !current.Equal(nxt) {
+		f, _ := os.Create(fmt.Sprintf("2020/day11/img/part2/img%03d.png", i))
+		png.Encode(f, current.Img())
 		current, nxt = current.Next2(nxt)
+		f.Close()
+		i++
 	}
 	count = 0
 	for _, s := range current.seats {
@@ -201,4 +219,22 @@ func (f *Ferry) String() string {
 		str[y] = string(s)
 	}
 	return strings.Join(str, "\n")
+}
+
+var (
+	colors = map[seat]color.NRGBA{
+		Floor: {R: 0, G: 0x33, B: 0x42, A: 255},
+		Empty: {R: 0, G: 0xD1, B: 0x99, A: 255},
+		Full:  {R: 0xf6, G: 0x3f, B: 0x64, A: 255},
+	}
+)
+
+func (f *Ferry) Img() image.Image {
+	img := image.NewNRGBA(image.Rect(0, 0, f.x-1, f.y-1))
+	for p, s := range f.seats {
+		img.Set(p.x, p.y, colors[s])
+	}
+
+	out := resize.Resize(uint(f.x*10), uint(f.y*10), img, resize.NearestNeighbor)
+	return out
 }
