@@ -11,6 +11,7 @@ func main() {
 	counts := count(diff(input))
 	fmt.Println(counts[1], counts[3]+1)
 	fmt.Println(counts[1] * (counts[3] + 1))
+	fmt.Println(paths(input))
 }
 
 func diff(l []int) []int {
@@ -30,17 +31,23 @@ func count(l []int) map[int]int {
 }
 
 func paths(l []int) int {
-	count := 1
-	length := len(l)
-	l = append(l, 0, 0, 0, 0)
-	for i := 0; i < length; i++ {
-		x := l[i]
-		for _, y := range l[i+1 : i+4] {
-			if y-x <= 3 {
-				count++
-			}
-		}
-		count--
+	lengths := map[int]int{
+		len(l) - 1: 1,
 	}
-	return count
+
+	for i := len(l) - 2; i >= 0; i-- {
+		count := 0
+		if i+1 < len(l) && l[i+1]-l[i] < 4 {
+			count += lengths[i+1]
+		}
+		if i+2 < len(l) && l[i+2]-l[i] < 4 {
+			count += lengths[i+2]
+		}
+		if i+3 < len(l) && l[i+3]-l[i] < 4 {
+			count += lengths[i+3]
+		}
+		lengths[i] = count
+	}
+
+	return lengths[0]
 }
