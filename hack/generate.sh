@@ -3,7 +3,10 @@ if [ -z $1 ]; then
     exit 1
 fi
 
-dir=2021/day$1
+# year is the second argument, or 2022 if not supplied
+year=${2:-2022}
+
+dir=$year/day$1
 mkdir -p $dir
 touch $dir/input.txt $dir/instructions.txt
 cat  <<EOF >$dir/main.go

@@ -86,5 +86,5 @@ func parseRegex(i int) string {
 		out.WriteString(parseRegex(num))
 	}
 	out.WriteString(")")
-	return  out.String()
+	return out.String()
 }
