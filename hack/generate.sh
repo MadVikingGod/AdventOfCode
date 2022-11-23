@@ -9,10 +9,18 @@ year=${2:-2022}
 dir=$year/day$1
 mkdir -p $dir
 touch $dir/input.txt $dir/instructions.txt
-cat  <<EOF >$dir/main.go
+
+if [ ! -f $dir/main.go ]; then
+    cat  <<EOF >$dir/main.go
 package main 
+
+import _ "embed"
+
+//go:embed input.txt
+var input string
 
 func main() {
 
 }
 EOF
+fi
