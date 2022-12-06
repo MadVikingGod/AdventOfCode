@@ -13,7 +13,9 @@ func main() {
 // findStart returns the position of the first non-repeating 4 character substring
 func findStart(s string) int {
 	for i := 3; i < len(s); i++ {
-		if !hasRepeat(s[i-3 : i+1]) {
+		if s[i-3] != s[i-2] && s[i-3] != s[i-1] && s[i-3] != s[i] &&
+			s[i-2] != s[i-1] && s[i-2] != s[i] &&
+			s[i-1] != s[i] {
 			return i + 1
 		}
 	}
