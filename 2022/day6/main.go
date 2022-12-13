@@ -1,6 +1,9 @@
 package main
 
-import _ "embed"
+import (
+	_ "embed"
+	"math/bits"
+)
 
 //go:embed input.txt
 var input string
@@ -24,21 +27,15 @@ func findStart(s string) int {
 
 // findStartofMessage returns the position of the first non-repeating 14 character substring
 func findStartOfMessage(s string) int {
-	for i := 13; i < len(s); i++ {
-		if !hasRepeat(s[i-13 : i+1]) {
-			return i + 1
+	var set uint = 0
+	for i := 0; i < len(s); i++ {
+		set ^= 1 << (s[i] - 'a')
+		if i >= 13 {
+			set ^= 1 << (s[i-13] - 'a')
+		}
+		if bits.OnesCount(set) == 13 {
+			return i + 2
 		}
 	}
 	return -1
-}
-
-func hasRepeat(s string) bool {
-	set := make(map[rune]bool)
-	for _, r := range s {
-		if set[r] {
-			return true
-		}
-		set[r] = true
-	}
-	return false
 }
