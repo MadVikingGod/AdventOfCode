@@ -113,3 +113,6 @@ venv.bak/
 .mypy_cache/
 
 .history/
+
+# go debug file
+__debug_bin
