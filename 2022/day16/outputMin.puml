@@ -1,0 +1,141 @@
+@startuml
+
+[*] -> AA
+
+AA --> GJ : 8
+AA --> IJ : 7
+AA --> KF : 4
+AA --> DS : 5
+AA --> MN : 5
+AA --> QN : 6
+AA --> EU : 3
+AA --> AE : 4
+AA --> NA : 9
+AA --> QB : 2
+AA --> SE : 7
+AA --> UK : 2
+AA --> CS : 3
+AA --> XM : 2
+AA --> CO : 4
+CO --> UK : 2
+CO --> MN : 9
+CO --> QN : 7
+CO --> DS : 9
+CO --> QB : 6
+CO --> AE : 2
+CO --> XM : 6
+CO --> NA : 5
+CO --> CS : 7
+CO --> KF : 8
+CO --> GJ : 9
+CO --> EU : 4
+CO --> SE : 8
+CO --> IJ : 3
+EU --> GJ : 5
+EU --> UK : 2
+EU --> XM : 5
+EU --> QB : 5
+EU --> MN : 8
+EU --> KF : 7
+EU --> SE : 10
+EU --> IJ : 7
+EU --> DS : 8
+EU --> AE : 2
+EU --> NA : 9
+EU --> CS : 6
+EU --> QN : 3
+SE --> NA : 3
+SE --> XM : 5
+SE --> IJ : 5
+SE --> DS : 8
+SE --> GJ : 15
+SE --> QB : 6
+SE --> AE : 10
+SE --> MN : 8
+SE --> CS : 6
+SE --> QN : 13
+SE --> KF : 3
+SE --> UK : 9
+CS --> IJ : 10
+CS --> KF : 3
+CS --> GJ : 11
+CS --> UK : 5
+CS --> MN : 2
+CS --> QN : 9
+CS --> DS : 6
+CS --> AE : 7
+CS --> QB : 3
+CS --> NA : 9
+CS --> XM : 3
+KF --> NA : 6
+KF --> XM : 2
+KF --> AE : 8
+KF --> MN : 5
+KF --> QB : 3
+KF --> UK : 6
+KF --> QN : 10
+KF --> IJ : 8
+KF --> DS : 5
+KF --> GJ : 12
+GJ --> QN : 2
+GJ --> AE : 7
+GJ --> NA : 14
+GJ --> UK : 7
+GJ --> MN : 13
+GJ --> DS : 13
+GJ --> IJ : 12
+GJ --> QB : 10
+GJ --> XM : 10
+AE --> MN : 9
+AE --> IJ : 5
+AE --> NA : 7
+AE --> UK : 2
+AE --> QB : 6
+AE --> XM : 6
+AE --> QN : 5
+AE --> DS : 9
+QB --> IJ : 9
+QB --> QN : 8
+QB --> DS : 6
+QB --> NA : 9
+QB --> MN : 5
+QB --> XM : 3
+QB --> UK : 4
+DS --> NA : 11
+DS --> UK : 7
+DS --> MN : 8
+DS --> XM : 3
+DS --> QN : 11
+DS --> IJ : 12
+NA --> UK : 7
+NA --> QN : 12
+NA --> XM : 8
+NA --> IJ : 2
+NA --> MN : 11
+UK --> IJ : 5
+UK --> QN : 5
+UK --> XM : 4
+UK --> MN : 7
+MN --> QN : 11
+MN --> IJ : 12
+MN --> XM : 5
+XM --> QN : 8
+XM --> IJ : 9
+QN --> IJ : 10
+EU : 13
+AE : 10
+QB : 4
+MN : 25
+QN : 21
+DS : 16
+UK : 5
+CS : 9
+IJ : 24
+KF : 12
+CO : 18
+GJ : 20
+SE : 17
+XM : 3
+NA : 23
+
+@enduml

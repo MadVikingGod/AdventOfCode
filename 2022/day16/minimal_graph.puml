@@ -1,0 +1,39 @@
+@startuml
+
+[*] -> AA
+
+AA --> DD : 1
+AA --> BB : 1
+AA --> JJ : 2
+AA --> CC : 2
+AA --> EE : 2
+AA --> HH : 5
+
+DD --> CC : 1
+DD --> BB : 2
+DD --> JJ : 3
+DD --> EE : 1
+DD --> HH : 4
+
+BB --> CC : 1
+BB --> EE : 3
+BB --> JJ : 3
+BB --> HH : 6
+
+EE --> CC : 2
+EE --> HH : 3
+EE --> JJ : 4
+
+CC --> HH : 5
+CC --> JJ : 4
+
+HH --> JJ : 7
+
+HH : 22
+DD : 20
+CC : 2
+EE : 3
+BB : 13
+JJ : 21
+
+@enduml

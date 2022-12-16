@@ -1,0 +1,22 @@
+@startuml
+
+[*] -> AA
+
+AA --> DD
+AA --> II
+AA --> BB
+DD : 20
+DD --> CC
+DD --> EE
+II --> JJ
+BB : 13
+BB --> CC
+CC : 2
+EE : 3
+EE --> FF
+JJ : 21
+FF --> GG
+GG --> HH
+HH : 22
+
+@enduml
