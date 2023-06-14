@@ -18,7 +18,7 @@ func findIngredient(ings, contents []stringSet) ([]stringSet, []stringSet, map[s
 			}
 		}
 	}
-
+	return []stringSet{}, []stringSet{}, knowIng
 }
 
 var re = regexp.MustCompile(`(.*) \(contains (.*)\)`)

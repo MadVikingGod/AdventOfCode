@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"runtime/pprof"
 	"strconv"
 	"strings"
 	"time"
@@ -26,17 +27,22 @@ func main() {
 	os.WriteFile("testInputMin.puml", minStateGraph(m), 0644)
 	fmt.Println(m.totalFlow(30, "AA", "DD", "BB", "JJ", "HH", "EE", "CC"))
 	fmt.Println(m.findOptimal([]string{"AA"}))
-	fmt.Println(m.findOptimal2([]string{"AA"}, []string{"AA"}))
+	fmt.Println(m.findOptimal2(newState(m, 26)))
 
 	tunnel = parseTunnel(input)
 	puml = PrintActivity(tunnel)
 	os.WriteFile("output.puml", puml, 0644)
 	m = tunnel.toMinTunnel()
 	os.WriteFile("outputMin.puml", minStateGraph(m), 0644)
-	fmt.Println(m.findOptimal([]string{"AA"}))
+	start := time.Now()
+	fmt.Println(m.findOptimal([]string{"AA"}), time.Since(start))
 	//1606 is too low
 	//[AA UK CO IJ NA SE KF CS MN] 1862
-	fmt.Println(m.findOptimal2([]string{"AA"}, []string{"AA"}))
+	file, _ := os.Create("part2.pprof")
+	pprof.StartCPUProfile(file)
+	fmt.Println(m.findOptimal2(newState(m, 26)))
+	pprof.StopCPUProfile()
+	file.Close()
 }
 
 type Tunnel map[string]Room
@@ -72,25 +78,34 @@ func (t Tunnel) toMinTunnel() minTunnel {
 			nodes = append(nodes, n)
 		}
 	}
-	m := minTunnel{weights: make(map[string]map[string]int), flows: make(map[string]int)}
+	m := minTunnel{
+		weights:     make(map[string]map[string]int),
+		flatWeights: make(map[string]int),
+		flows:       make(map[string]int),
+	}
 	m.weights["AA"] = map[string]int{}
 	for _, n := range nodes {
 		m.flows[n] = t[n].flow
 		m.weights[n] = map[string]int{}
 		m.weights["AA"][n] = t.distance("AA", n)
+		m.flatWeights["AA"+n] = t.distance("AA", n)
 	}
 	for i := 0; i < len(nodes)-1; i++ {
 		for j := i + 1; j < len(nodes); j++ {
 			m.weights[nodes[i]][nodes[j]] = t.distance(nodes[i], nodes[j])
 			m.weights[nodes[j]][nodes[i]] = t.distance(nodes[i], nodes[j])
+
+			m.flatWeights[nodes[i]+nodes[j]] = t.distance(nodes[i], nodes[j])
+			m.flatWeights[nodes[j]+nodes[i]] = t.distance(nodes[i], nodes[j])
 		}
 	}
 	return m
 }
 
 type minTunnel struct {
-	weights map[string]map[string]int
-	flows   map[string]int
+	weights     map[string]map[string]int
+	flatWeights map[string]int
+	flows       map[string]int
 }
 
 func (t minTunnel) distance(from, to string) int {
@@ -144,59 +159,100 @@ func (t minTunnel) findOptimal(current []string) int {
 	return best
 }
 
-func (t minTunnel) findOptimal2(currentSelf, currentElephants []string) int {
+type state struct {
+	tunnel          minTunnel
+	max             int
+	seen            map[string]bool
+	self            []string
+	selfWeight      int
+	elephants       []string
+	elephantsWeight int
+}
+
+func newState(t minTunnel, max int) *state {
+	return &state{
+		tunnel:    t,
+		max:       max,
+		seen:      make(map[string]bool),
+		self:      []string{"AA"},
+		elephants: []string{"AA"},
+	}
+}
+
+func (s *state) flow() int {
+	return s.tunnel.totalFlow(26, s.self...) + s.tunnel.totalFlow(26, s.elephants...)
+}
+
+func (s *state) addSelf(n string) bool {
+	if s.seen[n] {
+		return false
+	}
+	// w := s.tunnel.weights[s.self[len(s.self)-1]][n]
+	w := s.tunnel.flatWeights[s.self[len(s.self)-1]+n]
+	if len(s.self)+1+s.selfWeight+w > s.max {
+		return false
+	}
+	s.self = append(s.self, n)
+	s.selfWeight += w
+	s.seen[n] = true
+	return true
+}
+
+func (s *state) addElephant(n string) bool {
+	if s.seen[n] {
+		return false
+	}
+	// w := s.tunnel.weights[s.elephants[len(s.elephants)-1]][n]
+	w := s.tunnel.flatWeights[s.elephants[len(s.elephants)-1]+n]
+	if len(s.elephants)+1+s.elephantsWeight+w > s.max {
+		return false
+	}
+	s.elephants = append(s.elephants, n)
+	s.elephantsWeight += w
+	s.seen[n] = true
+	return true
+}
+
+func (s *state) popSelf() {
+	last := s.self[len(s.self)-1]
+	s.selfWeight -= s.tunnel.weights[s.self[len(s.self)-2]][last]
+	s.self = s.self[:len(s.self)-1]
+	s.seen[last] = false
+}
+func (s *state) popElephant() {
+	last := s.elephants[len(s.elephants)-1]
+	s.elephantsWeight -= s.tunnel.weights[s.elephants[len(s.elephants)-2]][last]
+	s.elephants = s.elephants[:len(s.elephants)-1]
+	s.seen[last] = false
+}
+
+func (t minTunnel) findOptimal2(s *state) int {
 	startTime := time.Now()
 	best := 0
-	seen := make(map[string]bool)
-	for _, c := range currentSelf {
-		seen[c] = true
-	}
-	for _, c := range currentElephants {
-		if seen[c] && c != "AA" {
-			panic("elephant in self")
-		}
-		seen[c] = true
-	}
-	fromSelf := currentSelf[len(currentSelf)-1]
-	fromElephants := currentElephants[len(currentElephants)-1]
-	for toSelf := range t.weights[fromSelf] {
-		if len(currentSelf) == 1 {
-			now := time.Now()
-			fmt.Println(toSelf, now.Sub(startTime))
-			startTime = now
-		}
-		if seen[toSelf] {
+
+	for to := range t.weights[s.self[len(s.self)-1]] {
+		if !s.addSelf(to) {
 			continue
 		}
-		seen[toSelf] = true
-		currentSelf = append(currentSelf, toSelf)
-		if len(currentSelf)+t.cumWeight(currentSelf...) > 26 {
-			currentSelf = currentSelf[:len(currentSelf)-1]
-			seen[toSelf] = false
-			continue
-		}
-		for toElephants := range t.weights[fromElephants] {
-			if seen[toElephants] {
+		for to := range t.weights[s.elephants[len(s.elephants)-1]] {
+			if !s.addElephant(to) {
 				continue
 			}
-			currentElephants = append(currentElephants, toElephants)
-			if len(currentElephants)+t.cumWeight(currentElephants...) > 26 {
-				currentElephants = currentElephants[:len(currentElephants)-1]
-				continue
-			}
-			score := t.findOptimal2(currentSelf, currentElephants)
+			score := t.findOptimal2(s)
 			if score > best {
 				best = score
 			}
-			currentElephants = currentElephants[:len(currentElephants)-1]
+			s.popElephant()
 		}
-
-		currentSelf = currentSelf[:len(currentSelf)-1]
-		seen[toSelf] = false
+		s.popSelf()
+		if len(s.self) == 1 {
+			fmt.Println(to, time.Since(startTime))
+			startTime = time.Now()
+		}
 	}
-
 	if best == 0 {
-		return t.totalFlow(26, currentSelf...) + t.totalFlow(26, currentElephants...)
+		f := s.flow()
+		return f
 	}
 	return best
 }

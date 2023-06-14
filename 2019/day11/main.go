@@ -3,13 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/madvikinggod/AdventOfCode/2019/day11/scratch"
-	"github.com/madvikinggod/AdventOfCode/2019/intcode"
-	"github.com/madvikinggod/AdventOfCode/2019/location"
 	"io"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/madvikinggod/AdventOfCode/2019/day11/scratch"
+	"github.com/madvikinggod/AdventOfCode/2019/intcode"
+	"github.com/madvikinggod/AdventOfCode/2019/location"
 )
 
 type logger struct {
@@ -33,6 +34,7 @@ func main() {
 
 	mw := io.MultiWriter(p2w, &logger{})
 
+	input := []int{}
 	ic := intcode.New(input)
 	ic.In = p1r
 	ic.Out = mw

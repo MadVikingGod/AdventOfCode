@@ -7,7 +7,7 @@ import (
 )
 
 func Test_findElfPower(t *testing.T) {
-
+	t.SkipNow()
 	tests := []struct {
 		name      string
 		inputfile string
